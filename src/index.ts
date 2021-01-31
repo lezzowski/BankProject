@@ -104,7 +104,6 @@ var userHistory = ({params: {id, user}}:Request, res:Response) => {
 
 }
 
-
 var sendMoney = ({body: {senderBankId, senderId, receiverBankId, receiverId, moneySent}}:Request, res:Response) => {
     var senderBank = banksList.find(({bankId}) => bankId === Number(senderBankId))
     var receiverBank = banksList.find(({bankId}) => bankId === Number(receiverBankId))
