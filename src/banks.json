@@ -1,0 +1,130 @@
+[
+  {
+    "bankId": 0,
+    "bankName": "Banca Sella",
+    "commission": 1,
+    "bankBudget": 5005,
+    "bankClients": [
+      {
+        "bankId": 0,
+        "id": 1,
+        "name": "Luca",
+        "surname": "Giurato",
+        "balance": 3995
+      },
+      {
+        "bankId": 0,
+        "id": 2,
+        "name": "Pietro",
+        "surname": "Smusi",
+        "balance": 10500
+      },
+      {
+        "bankId": 0,
+        "id": 1,
+        "name": "Matteo",
+        "surname": "HS",
+        "balance": 1000
+      }
+    ],
+    "transactionList": [
+      {
+        "id": 0,
+        "userId": 1,
+        "transaction": "S",
+        "amount": 500
+      },
+      {
+        "id": 1,
+        "userId": 2,
+        "transaction": "R",
+        "amount": 500
+      },
+      {
+        "id": 2,
+        "userId": 1,
+        "transaction": "S",
+        "amount": 500
+      },
+      {
+        "id": 3,
+        "userId": 1,
+        "transaction": "S",
+        "amount": 500
+      },
+      {
+        "id": 4,
+        "userId": 1,
+        "transaction": "S",
+        "amount": 1500
+      },
+      {
+        "id": 5,
+        "userId": 1,
+        "transaction": "S",
+        "amount": 1500
+      },
+      {
+        "id": 6,
+        "userId": 1,
+        "transaction": "S",
+        "amount": 1500
+      }
+    ]
+  },
+  {
+    "bankId": 1,
+    "bankName": "Banca Unicredit",
+    "commission": 1,
+    "bankBudget": 5000,
+    "bankClients": [
+      {
+        "bankId": 1,
+        "id": 1,
+        "name": "Matteo",
+        "surname": "HS",
+        "balance": 15500
+      }
+    ],
+    "transactionList": [
+      {
+        "id": 0,
+        "userId": 1,
+        "transaction": "R",
+        "amount": 500
+      },
+      {
+        "id": 1,
+        "userId": 1,
+        "transaction": "R",
+        "amount": 500
+      },
+      {
+        "id": 2,
+        "userId": 1,
+        "transaction": "R",
+        "amount": 1500
+      },
+      {
+        "id": 3,
+        "userId": 1,
+        "transaction": "R",
+        "amount": 1500
+      },
+      {
+        "id": 4,
+        "userId": 1,
+        "transaction": "R",
+        "amount": 1500
+      }
+    ]
+  },
+  {
+    "bankId": 2,
+    "bankName": "Banca Intesa",
+    "commission": 1,
+    "bankBudget": 5000,
+    "bankClients": [],
+    "transactionList": []
+  }
+]
