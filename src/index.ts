@@ -91,7 +91,7 @@ var showUsersOfBank = ({params: {id}}:Request, res:Response) => {
     else res.status(404).json({message: `Bank${id} not found!`})
 }
 
-var userHistory = ({params: {id, user}}:Request, res:Response) => {
+var showUserHistory = ({params: {id, user}}:Request, res:Response) => {
     var bank = banksList.find(({bankId}) => bankId === Number(id))
 
     if(bank){
@@ -151,7 +151,7 @@ var sendMoney = ({body: {senderBankId, senderId, receiverBankId, receiverId, mon
 app.get('/banks', showBanks)
 app.get('/banks/:id', showBanksById)
 app.get('/banks/:id/users', showUsersOfBank)
-app.get('/banks/:id/users/:user',userHistory)
+app.get('/banks/:id/users/:user',showUserHistory)
 app.post('/banks/:bankId', registerUser)
 app.put('/banks/send', sendMoney)
 
