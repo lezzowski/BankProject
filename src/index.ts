@@ -10,13 +10,12 @@ app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 
 let banksList: Bank[]
-let path:any 
+let path:string
 
 glob('./src/*.json', (_,file) =>{
     path = file[0]
     let raw = fs.readFileSync(path)
-    let banks = JSON.parse(raw.toString())
-    banksList = banks.map((value:any) => value)
+    banksList = JSON.parse(raw.toString())
 })
 
 let write = ():void =>{
@@ -41,7 +40,7 @@ let updateBalance = (senderInfo:Account, receiverInfo:Account, senderBank:Bank, 
     }
 }
 
-let showBanks = (_:any,res:Response) => {
+let showBanks = (_:Request,res:Response) => {
 
     let banks = banksList.map(({bankId,bankName,commission}) => {
         return {
@@ -77,8 +76,9 @@ let showBanksById = ({params: {id}}:Request,res:Response) => {
 }
 
 let registerUser = ({params: {bankId}, body: {id, name, surname, balance}}:Request, res:Response) => {
-    if(banksList.find(item => item.bankId === Number(bankId))){
-        banksList.find(item => item.bankId === Number(bankId))?.bankClients.push(new Account(Number(bankId), id, name, surname, balance))
+    const bank = banksList.find(item => item.bankId === Number(bankId))
+    if(bank){
+        bank.bankClients.push(new Account(Number(bankId), id, name, surname, balance))
         write()
         res.status(201).json({message:"User created!"})
     }else{
