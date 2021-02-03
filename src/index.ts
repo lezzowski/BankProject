@@ -118,34 +118,17 @@ let sendMoney = ({body: {senderBankId, senderId, receiverBankId, receiverId, mon
         let senderInfo = senderBank.bankClients.find(({id}) => id === Number(senderId))
         let receiverInfo = receiverBank.bankClients.find(({id}) => id === Number(receiverId))
         
-        const sameBank = senderBank.bankId === receiverBank.bankId
-        
         if((senderInfo && receiverInfo)){
-            if(sameBank){
-                if((senderInfo.balance >= Number(moneySent))){
+            if((senderInfo.balance >= Number(moneySent) + senderBank.commission)){
+                updateBalance(senderInfo,receiverInfo, senderBank, receiverBank,moneySent)
+                saveTransaction(senderBank,receiverBank,senderInfo,receiverInfo,moneySent)
+                write()
 
-                    updateBalance(senderInfo,receiverInfo, senderBank, receiverBank,moneySent)
-                    saveTransaction(senderBank,receiverBank,senderInfo,receiverInfo,moneySent)
-                    write()
-
-                    res.status(200).json({message: `Money transferred! Amount:${moneySent} Money transferred!`})
-
-                }else res.status(400).json({message: "Not enough money!"})
-
-            }else{
-                if((senderInfo.balance >= (Number(moneySent) + senderBank.commission))){
-
-                    updateBalance(senderInfo,receiverInfo, senderBank, receiverBank,moneySent)
-                    saveTransaction(senderBank,receiverBank,senderInfo,receiverInfo,moneySent)
-                    write()
-
-                    res.status(200).json({message: `Money transferred! Amount:${moneySent}+${senderBank.commission} commission`})
-
-                }else res.status(400).json({message: "Not enough money!"})
-            } 
-            
+                res.status(200).json({
+                    message: `Money transferred! Amount: €${moneySent} Money transferred!`,
+                    commission: `€${senderBank.commission}`})
+            }else res.status(400).json({message: "Not enough money!"})
         }else res.status(400).json({message:"User not found!"})
-        
     }else res.status(400).json({message:"Bank not found!"})
 }
 
