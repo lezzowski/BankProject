@@ -6,8 +6,6 @@ import bodyparser from 'body-parser'
 import glob from 'glob'
 import fs from 'fs'
 
-
-
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 
