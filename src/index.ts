@@ -1,4 +1,4 @@
-import express, {Request, Response, NextFunction} from 'express'
+import express, {Request, Response} from 'express'
 const app = express()
 import {Bank} from './Bank'
 import {Account} from './Account'
@@ -21,20 +21,31 @@ glob('./src/*.json', (_,file) =>{
     banksList = banks.map((value:any) => value)
 })
 
-var write = ():void =>{
+let write = ():void =>{
     let data = JSON.stringify(banksList, null, 2)
     fs.writeFileSync(path, data)
 }
 
-var saveTransaction = (senderBank:Bank,receiverBank:Bank,senderInfo:Account,receiverInfo:Account,moneySent:number):void =>{
+let saveTransaction = (senderBank:Bank,receiverBank:Bank,senderInfo:Account,receiverInfo:Account,moneySent:number):void =>{
     senderBank.transactionList.push({id: senderBank.transactionList.length, userId: senderInfo.id, transaction: "S", amount: moneySent})
     receiverBank.transactionList.push({id: receiverBank.transactionList.length, userId: receiverInfo.id, transaction: "R", amount: moneySent})
 
 }
 
-var showBanks = (_:any,res:Response) => {
+let updateBalance = (senderInfo:Account, receiverInfo:Account, senderBank:Bank, receiverBank:Bank, moneySent:number):void => {
+    if (senderBank.bankId === receiverBank.bankId) {
+        senderInfo.balance -= Number(moneySent)
+        receiverInfo.balance += Number(moneySent)
+    }else{
+        senderInfo.balance -= Number(moneySent) + senderBank.commission
+        receiverInfo.balance += Number(moneySent)
+        senderBank.bankBudget += senderBank.commission
+    }
+}
 
-    var banks = banksList.map(({bankId,bankName,commission}) => {
+let showBanks = (_:any,res:Response) => {
+
+    let banks = banksList.map(({bankId,bankName,commission}) => {
         return {
             bankId,
             bankName,
@@ -47,12 +58,10 @@ var showBanks = (_:any,res:Response) => {
     }else res.status(404).json({message: "Banks not found!"})
 }
 
-var showBanksById = ({params: {id}}:Request,res:Response) => {
-    if (Number(id) < 0 || Number(id) > banksList.length) {
-        return res.status(400).json({ message: "Error, bank not found" })
-    }
+let showBanksById = ({params: {id}}:Request,res:Response) => {
+    if (Number(id) < 0 || Number(id) > banksList.length) res.status(400).json({ message: "Error, bank not found" })
 
-    var single = banksList.map(({bankId,bankName,commission}) => {
+    let single = banksList.map(({bankId,bankName,commission}) => {
         return {
             bankId,
             bankName,
@@ -61,7 +70,7 @@ var showBanksById = ({params: {id}}:Request,res:Response) => {
     })
 
     if(single){
-        var inside = single.find(({bankId}) => bankId === Number(id))
+        let inside = single.find(({bankId}) => bankId === Number(id))
         res.status(200).json(inside)
 
     }else res.status(404).json({message: "Bank not found!"})
@@ -69,7 +78,7 @@ var showBanksById = ({params: {id}}:Request,res:Response) => {
         
 }
 
-var registerUser = ({params: {bankId}, body: {id, name, surname, balance}}:Request, res:Response) => {
+let registerUser = ({params: {bankId}, body: {id, name, surname, balance}}:Request, res:Response) => {
     if(banksList.find(item => item.bankId === Number(bankId))){
         banksList.find(item => item.bankId === Number(bankId))?.bankClients.push(new Account(Number(bankId), id, name, surname, balance))
         write()
@@ -79,9 +88,9 @@ var registerUser = ({params: {bankId}, body: {id, name, surname, balance}}:Reque
     }
 }
 
-var showUsersOfBank = ({params: {id}}:Request, res:Response) => {
-    var bank = banksList.find(({bankId}) => bankId === Number(id))
-    var list = bank?.bankClients.map(({id,name,surname}) => { return {
+let showUsersOfBank = ({params: {id}}:Request, res:Response) => {
+    let bank = banksList.find(({bankId}) => bankId === Number(id))
+    let list = bank?.bankClients.map(({id,name,surname}) => { return {
         id,
         name,
         surname
@@ -91,26 +100,25 @@ var showUsersOfBank = ({params: {id}}:Request, res:Response) => {
     else res.status(404).json({message: `Bank${id} not found!`})
 }
 
-var showUserHistory = ({params: {id, user}}:Request, res:Response) => {
-    var bank = banksList.find(({bankId}) => bankId === Number(id))
+let showUserHistory = ({params: {id, user}}:Request, res:Response) => {
+    let bank = banksList.find(({bankId}) => bankId === Number(id))
 
     if(bank){
-        var userTransaction = bank.transactionList.filter(({userId}) => userId === Number(user))
-        if(userTransaction){
-            res.status(200).json(userTransaction)
-        }else res.status(400).json({message: "No transaction showable!"})
+        let userTransaction = bank.transactionList.filter(({userId}) => userId === Number(user))
+        if(userTransaction) res.status(200).json(userTransaction)
+        else res.status(400).json({message: "There are no transactions to show!"})
 
     }else res.status(400).json({message: "Bank not found!"})
 
 }
 
-var sendMoney = ({body: {senderBankId, senderId, receiverBankId, receiverId, moneySent}}:Request, res:Response) => {
-    var senderBank = banksList.find(({bankId}) => bankId === Number(senderBankId))
-    var receiverBank = banksList.find(({bankId}) => bankId === Number(receiverBankId))
+let sendMoney = ({body: {senderBankId, senderId, receiverBankId, receiverId, moneySent}}:Request, res:Response) => {
+    let senderBank = banksList.find(({bankId}) => bankId === Number(senderBankId))
+    let receiverBank = banksList.find(({bankId}) => bankId === Number(receiverBankId))
 
     if(senderBank && receiverBank){
-        var senderInfo = senderBank.bankClients.find(({id}) => id === Number(senderId))
-        var receiverInfo = receiverBank.bankClients.find(({id}) => id === Number(receiverId))
+        let senderInfo = senderBank.bankClients.find(({id}) => id === Number(senderId))
+        let receiverInfo = receiverBank.bankClients.find(({id}) => id === Number(receiverId))
         
         const sameBank = senderBank.bankId === receiverBank.bankId
         
@@ -118,27 +126,22 @@ var sendMoney = ({body: {senderBankId, senderId, receiverBankId, receiverId, mon
             if(sameBank){
                 if((senderInfo.balance >= Number(moneySent))){
 
-                    senderInfo.balance -= Number(moneySent)
-                    receiverInfo.balance += Number(moneySent)
-                    
+                    updateBalance(senderInfo,receiverInfo, senderBank, receiverBank,moneySent)
                     saveTransaction(senderBank,receiverBank,senderInfo,receiverInfo,moneySent)
                     write()
 
-                    res.status(200).json({message: `Money transfered! Amount:${moneySent} Money transfered!`})
+                    res.status(200).json({message: `Money transferred! Amount:${moneySent} Money transferred!`})
 
                 }else res.status(400).json({message: "Not enough money!"})
 
             }else{
                 if((senderInfo.balance >= (Number(moneySent) + senderBank.commission))){
 
-                    senderInfo.balance -= Number(moneySent) + senderBank.commission
-                    receiverInfo.balance += Number(moneySent)
-                    senderBank.bankBudget += senderBank.commission
-
+                    updateBalance(senderInfo,receiverInfo, senderBank, receiverBank,moneySent)
                     saveTransaction(senderBank,receiverBank,senderInfo,receiverInfo,moneySent)
                     write()
 
-                    res.status(200).json({message: `Money transfered! Amount:${moneySent}+${senderBank.commission} commission`})
+                    res.status(200).json({message: `Money transferred! Amount:${moneySent}+${senderBank.commission} commission`})
 
                 }else res.status(400).json({message: "Not enough money!"})
             } 
@@ -149,7 +152,7 @@ var sendMoney = ({body: {senderBankId, senderId, receiverBankId, receiverId, mon
 }
 
 app.get('/banks', showBanks)
-app.get('/banks/:id', showBanksById)
+app.get('/banks/:id', showBanksById) 
 app.get('/banks/:id/users', showUsersOfBank)
 app.get('/banks/:id/users/:user',showUserHistory)
 app.post('/banks/:bankId', registerUser)
