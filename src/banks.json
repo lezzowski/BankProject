@@ -3,21 +3,21 @@
     "bankId": 0,
     "bankName": "Banca Sella",
     "commission": 1,
-    "bankBudget": 5005,
+    "bankBudget": 5006,
     "bankClients": [
       {
         "bankId": 0,
         "id": 1,
         "name": "Luca",
         "surname": "Giurato",
-        "balance": 3995
+        "balance": 5495
       },
       {
         "bankId": 0,
         "id": 2,
         "name": "Pietro",
         "surname": "Smusi",
-        "balance": 10500
+        "balance": 5999
       },
       {
         "bankId": 0,
@@ -69,6 +69,30 @@
         "userId": 1,
         "transaction": "S",
         "amount": 1500
+      },
+      {
+        "id": 7,
+        "userId": 2,
+        "transaction": "S",
+        "amount": 1500
+      },
+      {
+        "id": 8,
+        "userId": 1,
+        "transaction": "R",
+        "amount": 1500
+      },
+      {
+        "id": 9,
+        "userId": 2,
+        "transaction": "S",
+        "amount": 1500
+      },
+      {
+        "id": 10,
+        "userId": 2,
+        "transaction": "S",
+        "amount": 1500
       }
     ]
   },
@@ -83,7 +107,7 @@
         "id": 1,
         "name": "Matteo",
         "surname": "HS",
-        "balance": 15500
+        "balance": 18500
       }
     ],
     "transactionList": [
@@ -113,6 +137,18 @@
       },
       {
         "id": 4,
+        "userId": 1,
+        "transaction": "R",
+        "amount": 1500
+      },
+      {
+        "id": 5,
+        "userId": 1,
+        "transaction": "R",
+        "amount": 1500
+      },
+      {
+        "id": 6,
         "userId": 1,
         "transaction": "R",
         "amount": 1500
